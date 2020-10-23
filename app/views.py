@@ -132,16 +132,38 @@ def text_submit():
         # return list of topics
      #   print(vec_lda)
         result=dict(vec_lda)
-     #   print(result[0])
-    #   s1 = json.dumps(vec_lda.astype(float))
-    #    listToStr = ' '.join([str(elem) for elem in vec_lda])
 
-    #    print(result)
-        print(type(result))
+        from collections import OrderedDict
+        result = OrderedDict(sorted(result.items(), key=lambda x: x[1], reverse = True))
+
         dane=[]
         for x in result.values():
-            print ("{:.3f}".format(x))
-            dane.append("{:.3f}".format(x))
+  #          print ("{:.3f}".format(x))
+            dane.append("{:.2f}".format(x))
+
+ #       def key_remapper(dict: dict):
+ #           return {remap_dictionary.get(k, v): v for k, v in dict.items()}
+
+        def map_fields(init_dict, map_dict, res_dict=None):
+            res_dict = res_dict or {}
+            for k, v in init_dict.items():
+                if isinstance(v, dict):
+                    v = map_fields(v, map_dict)
+                if k in map_dict.keys():
+                    k = str(map_dict[k])
+                res_dict[k] = v
+    
+            return res_dict
+
+        topic_names = {0:"Econometric models of performance",1:"Commitment-Trust in Sales",2:"Diversity and inclusion in sales",3:"Sales technology & systems 1.0",4:"Compensation / Bonus",5:"Customer orientation",6:"Scales in sales research",7:"Sales technology & systems 2.0",8:"Research methods",9:"Salesperson interpersonal communication",10:"Sales teams",11:"Salespeople turnover",12:"International sales",13:"Salesperson's evaluation and training",14:"Salesperson's success and failure",15:"Buyer-seller relationship", 16:"Leadership and adaptive selling"}
+        
+
+        result_dict = map_fields(result, topic_names)
+
+
+        result = {}
+        result = result_dict
+
     return render_template('text_submit.html', result=result, dane=dane)
 
 @app.route("/result", methods=["GET"])
